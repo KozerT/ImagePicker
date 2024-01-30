@@ -1,35 +1,51 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useRef, useState } from "react";
+import { AVAILABLE_IMAGES } from "./data.js";
+import Images from "./components/Images.jsx";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const modal = useRef();
+  const selectedImage = useRef();
+  const [pickedImages, setPickedImages] = useState([]);
+
+  function handleStartRemoveImage(id) {
+    modal.current.open();
+    selectedImage.current = id;
+  }
+
+  function handleSelectImage(id) {
+    setPickedImages((prevPickedImages) => {
+      if (prevPickedImages.some((image) => image.id === id)) {
+        return prevPickedImages;
+      }
+      const image = AVAILABLE_IMAGES.find((image) => image.id === id);
+      return [image, ...prevPickedImages];
+    });
+  }
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
+      <header>
+        <h1>Image Picker</h1>
         <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
+          Create your personal collection of images of places you would like to
+          visit.
         </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      </header>
+      <main>
+        <Images
+          title="I'd like to visit ..."
+          fallbackText={"Select the places you would like to visit below."}
+          images={pickedImages}
+          onSelectImage={handleStartRemoveImage}
+        />
+        <Images
+          title="Available Places"
+          images={AVAILABLE_IMAGES}
+          onSelectImage={handleSelectImage}
+        />
+      </main>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
