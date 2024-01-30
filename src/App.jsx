@@ -25,21 +25,23 @@ function App() {
   return (
     <>
       <header>
-        <h1>Image Picker</h1>
+        <h1>Dream Destination Gallery</h1>
         <p>
-          Create your personal collection of images of places you would like to
-          visit.
+          Create a visual collection of dream destinations to motivate your
+          travel adventures.
         </p>
       </header>
       <main>
         <Images
-          title="I'd like to visit ..."
-          fallbackText={"Select the places you would like to visit below."}
+          title="My curated collection"
+          fallbackText={
+            "Select images that resonate with you from the gallery."
+          }
           images={pickedImages}
           onSelectImage={handleStartRemoveImage}
         />
         <Images
-          title="Available Places"
+          title="Gallery"
           images={AVAILABLE_IMAGES}
           onSelectImage={handleSelectImage}
         />
