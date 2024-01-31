@@ -11,8 +11,8 @@ const storedImages = storedIds.map((id) =>
 );
 
 function App() {
-  const modal = useRef();
   const selectedImage = useRef();
+  const [modalIsOpen, setModalIsOpen] = useState(false);
   const [availableImages, setAvailableImages] = useState([]);
   const [pickedImages, setPickedImages] = useState(storedImages);
 
@@ -29,12 +29,12 @@ function App() {
   }, []);
 
   function handleStartRemoveImage(id) {
-    modal.current.open();
+    setModalIsOpen(true);
     selectedImage.current = id;
   }
 
   function handleStopRemoveImage() {
-    modal.current.close();
+    setModalIsOpen(false);
   }
 
   function handleSelectImage(id) {
@@ -59,7 +59,7 @@ function App() {
     setPickedImages((prevPickedImages) =>
       prevPickedImages.filter((image) => image.id !== selectedImage.current)
     );
-    modal.current.close();
+    setModalIsOpen(false);
 
     const storedIds = JSON.parse(localStorage.getItem("selectedImages")) || [];
     localStorage.setItem(
@@ -70,7 +70,7 @@ function App() {
 
   return (
     <>
-      <Modal ref={modal}>
+      <Modal open={modalIsOpen} onClose={handleStopRemoveImage}>
         <DeleteConfirmation
           onCancel={handleStopRemoveImage}
           onConfirm={handleRemoveImage}
