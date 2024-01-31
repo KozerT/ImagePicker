@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AVAILABLE_IMAGES } from "./data.js";
 import Images from "./components/Images.jsx";
 import Modal from "./components/Modal.jsx";
@@ -55,7 +55,7 @@ function App() {
     }
   }
 
-  function handleRemoveImage() {
+  const handleRemoveImage = useCallback(function handleRemoveImage() {
     setPickedImages((prevPickedImages) =>
       prevPickedImages.filter((image) => image.id !== selectedImage.current)
     );
@@ -66,7 +66,7 @@ function App() {
       "selectedImages",
       JSON.stringify(storedIds.filter((id) => id !== selectedImage.current))
     );
-  }
+  }, []);
 
   return (
     <>
