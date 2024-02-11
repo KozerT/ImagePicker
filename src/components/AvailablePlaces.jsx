@@ -5,11 +5,12 @@ const AvailablePlaces = ({ onSelectImage }) => {
   const [availablePlaces, setAvailablePlaces] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:3001/places")
-      .then((response) => response.json())
-      .then((resData) => {
-        setAvailablePlaces(resData.places);
-      });
+    const fetchPlaces = async () => {
+      const response = await fetch("http://localhost:3001/places");
+      const resData = await response.json();
+      setAvailablePlaces(resData.places);
+    };
+    fetchPlaces();
   }, []);
 
   return (
