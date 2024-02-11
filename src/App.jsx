@@ -1,32 +1,15 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { AVAILABLE_IMAGES } from "./data.js";
+import { useCallback, useRef, useState } from "react";
 import Images from "./components/Images.jsx";
 import Modal from "./components/Modal.jsx";
 import DeleteConfirmation from "./components/DeleteConfirmation";
-import { sortPlacesByDistance } from "./loc.js";
-
-const storedIds = JSON.parse(localStorage.getItem("selectedImages")) || [];
-const storedImages = storedIds.map((id) =>
-  AVAILABLE_IMAGES.find((place) => place.id === id)
-);
+import AvailablePlaces from "./components/AvailablePlaces";
 
 function App() {
   const selectedImage = useRef();
+
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [availableImages, setAvailableImages] = useState([]);
-  const [pickedImages, setPickedImages] = useState(storedImages);
 
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition((position) => {
-      const sortedImages = sortPlacesByDistance(
-        AVAILABLE_IMAGES,
-        position.coords.latitude,
-        position.coords.longitude
-      );
-
-      setAvailableImages(sortedImages);
-    });
-  }, []);
+  const [pickedImages, setPickedImages] = useState([]);
 
   function handleStartRemoveImage(id) {
     setModalIsOpen(true);
@@ -37,35 +20,23 @@ function App() {
     setModalIsOpen(false);
   }
 
-  function handleSelectImage(id) {
+  function handleSelectImage(selectedImage) {
     setPickedImages((prevPickedImages) => {
-      if (prevPickedImages.some((image) => image.id === id)) {
+      if (!prevPickedImages) {
+        prevPickedImages = [];
+      }
+      if (prevPickedImages.some((place) => place.id === selectedImage.id)) {
         return prevPickedImages;
       }
-      const image = AVAILABLE_IMAGES.find((image) => image.id === id);
-      return [image, ...prevPickedImages];
+      return [selectedImage, ...prevPickedImages];
     });
-
-    const storedIds = JSON.parse(localStorage.getItem("selectedImages")) || [];
-    if (storedIds.indexOf(id) === -1) {
-      localStorage.setItem(
-        "selectedImages",
-        JSON.stringify([id, ...storedIds])
-      );
-    }
   }
 
-  const handleRemoveImage = useCallback(function handleRemoveImage() {
+  const handleRemoveImage = useCallback(async function handleRemoveImage() {
     setPickedImages((prevPickedImages) =>
-      prevPickedImages.filter((image) => image.id !== selectedImage.current)
+      prevPickedImages.filter((image) => image.id !== selectedImage.current.id)
     );
     setModalIsOpen(false);
-
-    const storedIds = JSON.parse(localStorage.getItem("selectedImages")) || [];
-    localStorage.setItem(
-      "selectedImages",
-      JSON.stringify(storedIds.filter((id) => id !== selectedImage.current))
-    );
   }, []);
 
   return (
@@ -92,12 +63,8 @@ function App() {
           images={pickedImages}
           onSelectImage={handleStartRemoveImage}
         />
-        <Images
-          title="Gallery"
-          images={availableImages}
-          fallbackText="Sort places by distance to you..."
-          onSelectImage={handleSelectImage}
-        />
+
+        <AvailablePlaces onSelectImage={handleSelectImage} />
       </main>
     </>
   );

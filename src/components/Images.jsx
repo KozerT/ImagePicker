@@ -9,8 +9,11 @@ const Images = ({ title, images, fallbackText, onSelectImage }) => {
         <ul className="places">
           {images.map((place) => (
             <li key={place.id} className="place-item">
-              <button onClick={() => onSelectImage(place.id)}>
-                <img src={place.image.src} alt={place.image.alt} />
+              <button onClick={() => onSelectImage(place)}>
+                <img
+                  src={`http://localhost:3000/${place.image.src}`}
+                  alt={place.image.alt}
+                />
                 <h3>{place.title}</h3>
               </button>
             </li>
