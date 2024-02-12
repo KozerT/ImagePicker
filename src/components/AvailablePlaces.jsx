@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Images from "./Images";
 import ErrorComponent from "./Error";
 import { sortPlacesByDistance } from "../loc";
+import { fetchAvailablePlaces } from "../http.js";
 
 const AvailablePlaces = ({ onSelectImage }) => {
   const [isFetching, setIsFetching] = useState(false);
@@ -12,16 +13,10 @@ const AvailablePlaces = ({ onSelectImage }) => {
     const fetchPlaces = async () => {
       setIsFetching(true);
       try {
-        const response = await fetch("http://localhost:3001/places");
-        const resData = await response.json();
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch places");
-        }
-
+        const places = await fetchAvailablePlaces();
         navigator.geolocation.getCurrentPosition((position) => {
           const sortedPlaces = sortPlacesByDistance(
-            resData.places,
+            places,
             position.coords.latitude,
             position.coords.longitude
           );
