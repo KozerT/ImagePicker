@@ -5,30 +5,16 @@ import DeleteConfirmation from "./components/DeleteConfirmation";
 import AvailablePlaces from "./components/AvailablePlaces";
 import { fetchUserPlaces, updateUserPlaces } from "./http.js";
 import ErrorComponent from "./components/Error.jsx";
+import useFetch from "./hooks/useFetch.js";
 
 function App() {
   const selectedImage = useRef();
 
   const [pickedImages, setPickedImages] = useState([]);
-  const [isFetching, setIsFetching] = useState([]);
-  const [error, setError] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [errorUpdatingPlaces, setErrorUpdatingPlaces] = useState();
 
-  useEffect(() => {
-    const fetchPlaces = async () => {
-      setIsFetching(true);
-      try {
-        const places = await fetchUserPlaces();
-        setPickedImages(places);
-      } catch (error) {
-        setError({ message: error.message || "Failed to fetch user places" });
-      }
-
-      setIsFetching(false);
-    };
-    fetchPlaces();
-  }, []);
+  const { isFetching, error, fetchedData } = useFetch(fetchUserPlaces, []);
 
   const handleStartRemoveImage = (id) => {
     setModalIsOpen(true);
@@ -120,7 +106,7 @@ function App() {
           <Images
             title="My collection"
             fallbackText="Select images that resonate with you from the gallery."
-            images={pickedImages}
+            images={fetchedData}
             onSelectImage={handleStartRemoveImage}
             loadingText="Fetching your places..."
             isLoading={isFetching}
