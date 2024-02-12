@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import Images from "./components/Images.jsx";
 import Modal from "./components/Modal.jsx";
 import DeleteConfirmation from "./components/DeleteConfirmation";
@@ -10,11 +10,15 @@ import useFetch from "./hooks/useFetch.js";
 function App() {
   const selectedImage = useRef();
 
-  const [pickedImages, setPickedImages] = useState([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [errorUpdatingPlaces, setErrorUpdatingPlaces] = useState();
 
-  const { isFetching, error, fetchedData } = useFetch(fetchUserPlaces, []);
+  const {
+    isFetching,
+    error,
+    fetchedData: pickedImages,
+    setFetchData: setPickedImages,
+  } = useFetch(fetchUserPlaces, []);
 
   const handleStartRemoveImage = (id) => {
     setModalIsOpen(true);
@@ -66,7 +70,7 @@ function App() {
 
       setModalIsOpen(false);
     },
-    [pickedImages]
+    [pickedImages, setPickedImages]
   );
 
   const handleError = () => {
@@ -106,7 +110,7 @@ function App() {
           <Images
             title="My collection"
             fallbackText="Select images that resonate with you from the gallery."
-            images={fetchedData}
+            images={pickedImages}
             onSelectImage={handleStartRemoveImage}
             loadingText="Fetching your places..."
             isLoading={isFetching}

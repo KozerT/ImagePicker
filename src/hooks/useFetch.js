@@ -24,6 +24,7 @@ const useFetch = (fetchFunction, initialValue) => {
     isFetching,
     error,
     fetchedData,
+    setFetchData,
   };
 };
 
