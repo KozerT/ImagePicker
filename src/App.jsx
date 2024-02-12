@@ -42,7 +42,7 @@ function App() {
     try {
       await updateUserPlaces([selectedImage, ...pickedImages]);
     } catch (error) {
-      setPickedImages(pickedImages); //role-back the changes
+      setPickedImages(pickedImages);
       setErrorUpdatingPlaces({
         message: error.message || "Failed to update place",
       });

@@ -6,7 +6,6 @@ const Images = ({
   isLoading,
   loadingText,
 }) => {
-  console.log(images);
   return (
     <section className="places-category">
       <h2>{title}</h2>
