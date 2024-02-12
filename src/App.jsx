@@ -1,27 +1,43 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Images from "./components/Images.jsx";
 import Modal from "./components/Modal.jsx";
 import DeleteConfirmation from "./components/DeleteConfirmation";
 import AvailablePlaces from "./components/AvailablePlaces";
-import { updateUserPlaces } from "./http.js";
+import { fetchUserPlaces, updateUserPlaces } from "./http.js";
 import ErrorComponent from "./components/Error.jsx";
 
 function App() {
   const selectedImage = useRef();
 
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-
   const [pickedImages, setPickedImages] = useState([]);
+  const [isFetching, setIsFetching] = useState([]);
+  const [error, setError] = useState(false);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
   const [errorUpdatingPlaces, setErrorUpdatingPlaces] = useState();
 
-  function handleStartRemoveImage(id) {
+  useEffect(() => {
+    const fetchPlaces = async () => {
+      setIsFetching(true);
+      try {
+        const places = await fetchUserPlaces();
+        setPickedImages(places);
+      } catch (error) {
+        setError({ message: error.message || "Failed to fetch user places" });
+      }
+
+      setIsFetching(false);
+    };
+    fetchPlaces();
+  }, []);
+
+  const handleStartRemoveImage = (id) => {
     setModalIsOpen(true);
     selectedImage.current = id;
-  }
+  };
 
-  function handleStopRemoveImage() {
+  const handleStopRemoveImage = () => {
     setModalIsOpen(false);
-  }
+  };
 
   const handleSelectImage = async (selectedImage) => {
     setPickedImages((prevPickedImages) => {
@@ -97,14 +113,19 @@ function App() {
         </p>
       </header>
       <main>
-        <Images
-          title="My collection"
-          fallbackText={
-            "Select images that resonate with you from the gallery."
-          }
-          images={pickedImages}
-          onSelectImage={handleStartRemoveImage}
-        />
+        {error && (
+          <ErrorComponent title="An error occurred!" message={error.message} />
+        )}
+        {!error && (
+          <Images
+            title="My collection"
+            fallbackText="Select images that resonate with you from the gallery."
+            images={pickedImages}
+            onSelectImage={handleStartRemoveImage}
+            loadingText="Fetching your places..."
+            isLoading={isFetching}
+          />
+        )}
         <AvailablePlaces onSelectImage={handleSelectImage} />
       </main>
     </>

@@ -1,6 +1,6 @@
 import React from "react";
 
-const Error = ({ title, message, onConfirm }) => {
+const ErrorComponent = ({ title, message, onConfirm }) => {
   return (
     <div className="error">
       <h2>{title}</h2>
@@ -16,4 +16,4 @@ const Error = ({ title, message, onConfirm }) => {
   );
 };
 
-export default Error;
+export default ErrorComponent;
